@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CUTE MO BOI!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tadaaa!</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,22 +15,24 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow: hidden;
   }
 
   .scene {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 40px;
-    width: 100vw;
-    padding: 40px;
+    gap: clamp(10px, 4vw, 40px);
+    width: 100%;
+    padding: clamp(10px, 4vw, 40px);
   }
 
   /* ---- Character ---- */
   .character {
-    width: 220px;
-    height: 260px;
+    width: clamp(110px, 28vw, 220px);
+    height: clamp(130px, 34vw, 260px);
     flex-shrink: 0;
     position: relative;
     z-index: 2;
@@ -48,15 +50,15 @@
 
   @keyframes shootPunch {
     0%   { transform: translateX(0); }
-    40%  { transform: translateX(16px); }
+    40%  { transform: translateX(10px); }
     100% { transform: translateX(0); }
   }
 
   /* Shoot particle */
   .shoot-particle {
     position: fixed;
-    width: 18px;
-    height: 18px;
+    width: clamp(10px, 3vw, 18px);
+    height: clamp(10px, 3vw, 18px);
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'%3E%3Cpath d='M50 80 C50 80 5 50 5 28 C5 13 17 3 30 3 C38 3 45 8 50 14 C55 8 62 3 70 3 C83 3 95 13 95 28 C95 50 50 80 50 80Z' fill='%23d42b2b'/%3E%3C/svg%3E") center/contain no-repeat;
     pointer-events: none;
     z-index: 100;
@@ -65,15 +67,11 @@
   /* ---- Heart field ---- */
   .heart-field {
     position: relative;
-    width: 380px;
-    height: 340px;
     flex-shrink: 0;
   }
 
   .heart-block {
     position: absolute;
-    width: 28px;
-    height: 28px;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'%3E%3Cpath d='M50 80 C50 80 5 50 5 28 C5 13 17 3 30 3 C38 3 45 8 50 14 C55 8 62 3 70 3 C83 3 95 13 95 28 C95 50 50 80 50 80Z' fill='%23d42b2b'/%3E%3C/svg%3E") center/contain no-repeat;
     opacity: 0;
     transform: scale(0);
@@ -86,16 +84,16 @@
     100% { opacity: 1; transform: scale(1) rotate(0deg); }
   }
 
-  /* "CUTE MO BOI! LOVE YA" text */
   .love-text {
-    margin-top: 32px;
+    margin-top: clamp(16px, 4vw, 36px);
     font-family: 'Pacifico', cursive;
-    font-size: 3rem;
+    font-size: clamp(1.5rem, 7vw, 3rem);
     color: #d42b2b;
     opacity: 0;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-align: center;
-    text-shadow: 3px 3px 0px #f5b8b8, 5px 5px 0px rgba(212,43,43,0.15);
+    text-shadow: 2px 2px 0px #f5b8b8, 4px 4px 0px rgba(212,43,43,0.15);
+    padding: 0 20px;
   }
 
   @keyframes fadeInText {
@@ -135,26 +133,35 @@ const heartPattern = [
 const field = document.getElementById('heartField');
 const loveText = document.getElementById('loveText');
 const character = document.getElementById('character');
-const SIZE = 28, GAP = 5;
 const COLS = heartPattern[0].length;
 const ROWS = heartPattern.length;
+
+// Responsive heart size
+const vw = window.innerWidth;
+const SIZE = vw < 480 ? 18 : vw < 768 ? 22 : 28;
+const GAP  = vw < 480 ? 3  : vw < 768 ? 4  : 5;
+
 const TOTAL_W = COLS * (SIZE + GAP);
 const TOTAL_H = ROWS * (SIZE + GAP);
 
+field.style.width  = TOTAL_W + 'px';
+field.style.height = TOTAL_H + 'px';
+
 const hearts = [];
-for (let r = 0; r < ROWS; r++) {
-  for (let c = 0; c < COLS; c++) {
+for (let r = 0; r < ROWS; r++)
+  for (let c = 0; c < COLS; c++)
     if (heartPattern[r][c] === 1) hearts.push({ r, c });
-  }
-}
+
 hearts.sort((a, b) => b.c - a.c);
 
 const heartEls = [];
 hearts.forEach(({ r, c }) => {
   const el = document.createElement('div');
   el.className = 'heart-block';
-  el.style.left = (c * (SIZE + GAP) + (380 - TOTAL_W) / 2) + 'px';
-  el.style.top  = (r * (SIZE + GAP) + (340 - TOTAL_H) / 2) + 'px';
+  el.style.width  = SIZE + 'px';
+  el.style.height = SIZE + 'px';
+  el.style.left = (c * (SIZE + GAP)) + 'px';
+  el.style.top  = (r * (SIZE + GAP)) + 'px';
   field.appendChild(el);
   heartEls.push(el);
 });
